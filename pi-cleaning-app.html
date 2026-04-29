@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PI Cleaning Services</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy-mid: #132240;
+    --navy-light: #1e3460;
+    --gold: #c9a84c;
+    --gold-light: #e8c96d;
+    --gold-pale: #f5e6b8;
+    --white: #ffffff;
+    --off-white: #f8f6f0;
+    --text-muted: #8a9bb5;
+    --danger: #e24b4a;
+    --success: #1D9E75;
+    --border: rgba(201,168,76,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* SPLASH */
+  #splash {
+    background: var(--navy);
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  #splash::before {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.15);} }
+  .splash-logo {
+    display: flex; flex-direction: column; align-items: center; gap: 20px; z-index: 1;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  @keyframes fadeInUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
+  .pi-emblem {
+    width: 120px; height: 120px;
+    border: 3px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    box-shadow: 0 0 40px rgba(201,168,76,0.3), inset 0 0 40px rgba(201,168,76,0.05);
+  }
+  .pi-emblem::before {
+    content: '';
+    position: absolute;
+    inset: 6px; border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.3);
+  }
+  .pi-letters {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px; font-weight: 900;
+    color: var(--gold);
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+  .splash-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+  .splash-tag {
+    font-size: 12px; font-weight: 300;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  .splash-bar {
+    position: absolute; bottom: 60px;
+    width: 120px; height: 3px;
+    background: rgba(201,168,76,0.2);
+    border-radius: 2px; overflow: hidden;
+  }
+  .splash-bar-fill {
+    height: 100%; width: 0%;
+    background: var(--gold);
+    border-radius: 2px;
+    animation: loadBar 2.8s ease forwards;
+  }
+  @keyframes loadBar { 0%{width:0%} 100%{width:100%} }
+
+  /* HEADER */
+  .app-header {
+    background: var(--navy-mid);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .header-emblem {
+    width: 38px; height: 38px;
+    border: 1.5px solid var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .header-emblem span {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 900; color: var(--gold);
+  }
+  .header-title { font-size: 14px; font-weight: 600; color: var(--white); }
+  .header-sub { font-size: 11px; color: var(--text-muted); }
+
+  /* CLOCK-IN SCREEN */
+  #clockin { background: var(--navy); }
+  .ci-scroll { flex: 1; overflow-y: auto; padding: 24px 20px; }
+  .ci-welcome { text-align: center; margin-bottom: 28px; }
+  .ci-welcome h1 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--white); margin-bottom: 6px; }
+  .ci-welcome p { font-size: 13px; color: var(--text-muted); }
+
+  .form-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .form-card h3 {
+    font-size: 12px; font-weight: 600;
+    color: var(--gold); letter-spacing: 2px;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: block; }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 15px; color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color 0.2s;
+    appearance: none; -webkit-appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(255,255,255,0.25); }
+  .field input:focus, .field select:focus { border-color: var(--gold); }
+  .field select option { background: var(--navy-mid); color: var(--white); }
+
+  .loc-btn {
+    width: 100%; margin-top: 10px;
+    background: rgba(201,168,76,0.1);
+    border: 1px dashed rgba(201,168,76,0.4);
+    border-radius: 10px;
+    padding: 12px;
+    color: var(--gold); font-size: 13px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.2s;
+  }
+  .loc-btn:active { transform: scale(0.98); }
+  .loc-status { margin-top: 8px; font-size: 12px; color: var(--success); text-align: center; min-height: 18px; }
+  .loc-status.error { color: var(--danger); }
+
+  .btn-clockin {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold) 0%, #a8892e 100%);
+    border: none; border-radius: 14px;
+    padding: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 600; color: var(--navy);
+    cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.3);
+  }
+  .btn-clockin:active { transform: scale(0.98); }
+  .btn-clockin:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* WORKING SCREEN */
+  #working { background: var(--navy); }
+  .work-scroll { flex: 1; overflow-y: auto; padding: 16px 20px; }
+
+  .stopwatch-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px 20px;
+    text-align: center; margin-bottom: 16px;
+  }
+  .sw-date { font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+  .sw-day { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--gold); margin-bottom: 16px; }
+  .sw-time {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px; font-weight: 700; color: var(--white);
+    letter-spacing: 2px; line-height: 1;
+    margin-bottom: 8px;
+  }
+  .sw-label { font-size: 12px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* Break Timer Card */
+  .break-timer-card {
+    display: none;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 16px;
+    padding: 18px 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    animation: fadeInUp 0.3s ease;
+  }
+  .break-timer-card.visible { display: block; }
+  .bt-label { font-size: 11px; color: var(--gold); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; }
+  .bt-time {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px; font-weight: 700; color: var(--gold-light);
+    letter-spacing: 2px; line-height: 1;
+    margin-bottom: 6px;
+  }
+  .bt-sub { font-size: 12px; color: var(--text-muted); }
+  .bt-history { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(201,168,76,0.15); }
+  .bt-history-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .bt-history-list { display: flex; flex-direction: column; gap: 4px; }
+  .bt-history-item { display: flex; justify-content: space-between; font-size: 12px; }
+  .bt-history-item span:first-child { color: var(--text-muted); }
+  .bt-history-item span:last-child { color: var(--gold); font-weight: 500; }
+
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(29,158,117,0.15);
+    border: 1px solid rgba(29,158,117,0.4);
+    border-radius: 20px;
+    padding: 6px 14px; margin-top: 12px;
+    font-size: 12px; color: var(--success); font-weight: 500;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: blink 1.2s ease infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  .status-pill.break { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.4); color: var(--gold); }
+  .status-pill.break .dot { background: var(--gold); }
+
+  .action-btn {
+    flex: 1; padding: 14px 10px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--navy-mid);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; text-align: center;
+    transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .action-btn .ab-icon { font-size: 20px; }
+  .action-btn:active { transform: scale(0.97); }
+  .action-btn.gold { border-color: var(--gold); color: var(--gold); }
+  .action-btn.break-btn { border-color: rgba(201,168,76,0.5); color: var(--gold-light); }
+  .action-btn.break-btn.on-break { background: rgba(201,168,76,0.12); border-color: var(--gold); }
+
+  .info-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px; margin-bottom: 16px;
+  }
+  .info-card h4 { font-size: 11px; font-weight: 600; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .info-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .info-row:last-child { margin-bottom: 0; }
+  .info-label { font-size: 12px; color: var(--text-muted); }
+  .info-val { font-size: 13px; color: var(--white); font-weight: 500; text-align: right; max-width: 60%; }
+
+  .jobs-list { margin-bottom: 16px; }
+  .job-item {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .job-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: var(--gold); flex-shrink: 0;
+  }
+  .job-info { flex: 1; }
+  .job-addr { font-size: 13px; color: var(--white); font-weight: 500; }
+  .job-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .job-active { color: var(--success); font-size: 11px; font-weight: 500; }
+
+  .btn-clockout {
+    width: 100%;
+    background: transparent;
+    border: 2px solid var(--danger);
+    border-radius: 14px; padding: 15px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; color: var(--danger);
+    cursor: pointer; transition: all 0.2s; margin-bottom: 20px;
+  }
+  .btn-clockout:active { background: rgba(226,75,74,0.1); transform: scale(0.98); }
+
+  /* AUTO-TIMEOUT BANNER */
+  .timeout-banner {
+    display: none;
+    background: rgba(226,75,74,0.1);
+    border: 1px solid rgba(226,75,74,0.3);
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;
+    font-size: 13px; color: var(--danger);
+    text-align: center;
+  }
+  .timeout-banner.visible { display: block; }
+
+  /* MODALS */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 100;
+    align-items: flex-end; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px 40px;
+    width: 100%; max-width: 430px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
+  .modal-handle { width: 40px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--white); margin-bottom: 20px; }
+  .modal-title span { color: var(--gold); }
+  .modal-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--gold) 0%, #a8892e 100%);
+    border: none; border-radius: 12px; padding: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600; color: var(--navy);
+    cursor: pointer; margin-top: 16px;
+  }
+  .modal-cancel {
+    width: 100%; background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--text-muted);
+    cursor: pointer; margin-top: 10px;
+  }
+
+  /* REPORT */
+  .report-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .report-type-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px; padding: 14px 10px;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+    color: var(--text-muted); font-size: 13px; font-family: 'DM Sans', sans-serif;
+  }
+  .report-type-btn .rt-icon { font-size: 22px; margin-bottom: 6px; }
+  .report-type-btn.selected { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold); }
+
+  .photo-upload-area {
+    border: 2px dashed rgba(201,168,76,0.3);
+    border-radius: 12px; padding: 20px;
+    text-align: center; cursor: pointer; margin-bottom: 14px;
+  }
+  .photo-upload-area input { display: none; }
+  .photo-preview { display: none; }
+  .photo-preview img { width: 100%; border-radius: 10px; max-height: 200px; object-fit: cover; }
+  .photo-count { font-size: 12px; color: var(--gold); margin-top: 8px; }
+
+  /* BREAK SUMMARY */
+  .break-summary {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px; padding: 14px; margin-bottom: 16px;
+  }
+  .break-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+  .break-row:last-child { margin-bottom: 0; }
+  .break-key { color: var(--text-muted); }
+  .break-val { color: var(--gold); font-weight: 500; }
+
+  /* CLOCKED OUT */
+  #clockedout { background: var(--navy); align-items: center; justify-content: center; text-align: center; padding: 40px 30px; }
+  .co-icon { font-size: 60px; margin-bottom: 24px; }
+  .co-title { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--gold); margin-bottom: 12px; }
+  .co-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; }
+  .co-summary {
+    background: var(--navy-mid); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px; width: 100%; margin-bottom: 30px; text-align: left;
+  }
+  .co-summary h4 { font-size: 11px; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+  .btn-newday {
+    background: linear-gradient(135deg, var(--gold) 0%, #a8892e 100%);
+    border: none; border-radius: 14px; padding: 16px 40px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--navy);
+    cursor: pointer;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" class="screen active">
+  <div class="splash-logo">
+    <div class="pi-emblem">
+      <span class="pi-letters">PI</span>
+    </div>
+    <div>
+      <div class="splash-name">PI Cleaning Services</div>
+      <div class="splash-tag">Professional Excellence</div>
+    </div>
+  </div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+</div>
+
+<!-- CLOCK-IN -->
+<div id="clockin" class="screen">
+  <div class="app-header">
+    <div class="header-logo">
+      <div class="header-emblem"><span>PI</span></div>
+      <div>
+        <div class="header-title">PI Cleaning Services</div>
+        <div class="header-sub">Employee Portal</div>
+      </div>
+    </div>
+    <div id="ci-time" style="font-size:13px;color:var(--gold);font-weight:600;"></div>
+  </div>
+  <div class="ci-scroll">
+    <div class="ci-welcome">
+      <h1>Good <span id="greeting-time">Morning</span> 👋</h1>
+      <p>Please complete all fields to clock in</p>
+    </div>
+
+    <div class="form-card">
+      <h3>Your Details</h3>
+      <div class="field">
+        <label>Full Name *</label>
+        <input type="text" id="emp-name" placeholder="e.g. Sarah Johnson" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Employee ID *</label>
+        <input type="text" id="emp-id" placeholder="e.g. PI-0042">
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>Job Location</h3>
+      <div class="field">
+        <label>Job Address *</label>
+        <input type="text" id="job-address" placeholder="e.g. 12 Collins St, Melbourne">
+      </div>
+      <button class="loc-btn" onclick="getLocation()">
+        <span>📍</span> Capture My GPS Location
+      </button>
+      <div class="loc-status" id="loc-status"></div>
+    </div>
+
+    <div class="form-card">
+      <h3>Shift Info</h3>
+      <div class="field">
+        <label>Shift Type</label>
+        <select id="shift-type">
+          <option value="Regular">Regular Shift</option>
+          <option value="Early Morning">Early Morning</option>
+          <option value="Evening">Evening</option>
+          <option value="Weekend">Weekend</option>
+          <option value="Casual">Casual</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-clockin" id="btn-ci" onclick="clockIn()" disabled>
+      Clock In to Start Shift
+    </button>
+    <div style="height:30px;"></div>
+  </div>
+</div>
+
+<!-- WORKING -->
+<div id="working" class="screen">
+  <div class="app-header">
+    <div>
+      <div class="header-title">On the Clock</div>
+      <div class="header-sub" id="work-employee-name">—</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button class="action-btn break-btn" id="break-btn" onclick="toggleBreak()" style="padding:8px 14px;flex-direction:row;border-radius:10px;gap:6px;font-size:12px;">
+        <span>☕</span> Break
+      </button>
+      <button class="action-btn gold" onclick="openAddJob()" style="padding:8px 14px;flex-direction:row;border-radius:10px;gap:6px;font-size:12px;">
+        <span>+</span> Add Job
+      </button>
+    </div>
+  </div>
+
+  <div class="work-scroll">
+    <!-- Auto-timeout warning -->
+    <div class="timeout-banner" id="timeout-banner">
+      ⚠️ Shift will auto-clock-out in <span id="timeout-countdown"></span>
+    </div>
+
+    <!-- Stopwatch -->
+    <div class="stopwatch-card">
+      <div class="sw-date" id="sw-date">—</div>
+      <div class="sw-day" id="sw-day">—</div>
+      <div class="sw-time" id="sw-time">00:00:00</div>
+      <div class="sw-label">Hours Worked Today</div>
+      <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:12px;">
+        <div class="status-pill" id="status-pill"><span class="dot"></span> Working</div>
+      </div>
+    </div>
+
+    <!-- Break Timer Card — visible only on break -->
+    <div class="break-timer-card" id="break-timer-card">
+      <div class="bt-label">☕ Currently On Break</div>
+      <div class="bt-time" id="bt-time">00:00</div>
+      <div class="bt-sub">Tap <strong>Resume</strong> in the header when ready</div>
+      <div class="bt-history" id="bt-history" style="display:none;">
+        <div class="bt-history-title">Break History</div>
+        <div class="bt-history-list" id="bt-history-list"></div>
+      </div>
+    </div>
+
+    <!-- Employee Info -->
+    <div class="info-card">
+      <h4>Shift Details</h4>
+      <div class="info-row"><span class="info-label">Name</span><span class="info-val" id="wi-name">—</span></div>
+      <div class="info-row"><span class="info-label">Employee ID</span><span class="info-val" id="wi-id">—</span></div>
+      <div class="info-row"><span class="info-label">Clocked In</span><span class="info-val" id="wi-clockin">—</span></div>
+      <div class="info-row"><span class="info-label">Shift Type</span><span class="info-val" id="wi-shift">—</span></div>
+      <div class="info-row"><span class="info-label">GPS</span><span class="info-val" id="wi-gps" style="font-size:11px;">—</span></div>
+      <div class="info-row"><span class="info-label">Total Break</span><span class="info-val" id="wi-break">—</span></div>
+    </div>
+
+    <!-- Jobs list -->
+    <div class="jobs-list" id="jobs-list"></div>
+
+    <!-- Report -->
+    <button class="action-btn" onclick="openReport()" style="width:100%;flex-direction:row;gap:10px;padding:14px 16px;margin-bottom:16px;">
+      <span class="ab-icon">📋</span>
+      <span>Submit a Report</span>
+      <span style="margin-left:auto;color:var(--text-muted);font-size:18px;">›</span>
+    </button>
+
+    <button class="btn-clockout" onclick="confirmClockOut()">Clock Out</button>
+  </div>
+</div>
+
+<!-- CLOCKED OUT -->
+<div id="clockedout" class="screen">
+  <div class="header-emblem" style="width:80px;height:80px;margin-bottom:20px;border-width:2px;">
+    <span style="font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);">PI</span>
+  </div>
+  <div class="co-title">Great Work!</div>
+  <div class="co-sub">Your shift has been recorded and synced. See you next time!</div>
+  <div class="co-summary">
+    <h4>Shift Summary</h4>
+    <div class="info-row"><span class="info-label">Employee</span><span class="info-val" id="co-name">—</span></div>
+    <div class="info-row"><span class="info-label">Total Hours</span><span class="info-val" id="co-hours" style="color:var(--gold);font-size:18px;font-weight:700;">—</span></div>
+    <div class="info-row"><span class="info-label">Break Time</span><span class="info-val" id="co-break">—</span></div>
+    <div class="info-row"><span class="info-label">Jobs Completed</span><span class="info-val" id="co-jobs">—</span></div>
+    <div class="info-row"><span class="info-label">Clock Out</span><span class="info-val" id="co-time">—</span></div>
+  </div>
+  <button class="btn-newday" onclick="resetApp()">Start New Shift</button>
+</div>
+
+<!-- MODAL: ADD JOB -->
+<div class="modal-overlay" id="modal-job">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add <span>Next Job</span></div>
+    <div class="field">
+      <label>New Job Address *</label>
+      <input type="text" id="new-job-addr" placeholder="e.g. 45 King St, CBD">
+    </div>
+    <button class="loc-btn" onclick="getJobLocation()" style="margin-top:0;">
+      <span>📍</span> Capture GPS for this Job
+    </button>
+    <div class="loc-status" id="job-loc-status"></div>
+    <button class="modal-btn" onclick="addJob()">Add Job Location</button>
+    <button class="modal-cancel" onclick="closeModal('modal-job')">Cancel</button>
+  </div>
+</div>
+
+<!-- MODAL: REPORT -->
+<div class="modal-overlay" id="modal-report">
+  <div class="modal-box" style="max-height:90vh;overflow-y:auto;">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Submit <span>Report</span></div>
+    <div class="field"><label>Report Type *</label></div>
+    <div class="report-type-grid">
+      <div class="report-type-btn" onclick="selectReport(this,'Incident')"><div class="rt-icon">⚠️</div>Incident</div>
+      <div class="report-type-btn" onclick="selectReport(this,'Maintenance')"><div class="rt-icon">🔧</div>Maintenance</div>
+      <div class="report-type-btn" onclick="selectReport(this,'Complaint')"><div class="rt-icon">💬</div>Complaint</div>
+      <div class="report-type-btn" onclick="selectReport(this,'Hazard')"><div class="rt-icon">🦺</div>Hazard</div>
+      <div class="report-type-btn" onclick="selectReport(this,'Supply Request')"><div class="rt-icon">📦</div>Supply Request</div>
+      <div class="report-type-btn" onclick="selectReport(this,'General')"><div class="rt-icon">📝</div>General</div>
+    </div>
+    <div class="field">
+      <label>Description *</label>
+      <textarea id="report-desc" rows="4" placeholder="Describe the issue in detail..."></textarea>
+    </div>
+    <div class="field"><label>Attach Photo (optional)</label></div>
+    <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()">
+      <input type="file" id="photo-input" accept="image/*" capture="environment" multiple onchange="handlePhoto(this)">
+      <div id="photo-placeholder">
+        <div style="font-size:28px;margin-bottom:6px;">📷</div>
+        <div style="font-size:13px;color:var(--text-muted);">Tap to take a photo or choose from gallery</div>
+      </div>
+      <div class="photo-preview" id="photo-preview"></div>
+      <div class="photo-count" id="photo-count"></div>
+    </div>
+    <div class="field">
+      <label>Priority</label>
+      <select id="report-priority">
+        <option value="Normal">Normal</option>
+        <option value="Urgent">Urgent</option>
+        <option value="Low">Low</option>
+      </select>
+    </div>
+    <button class="modal-btn" onclick="submitReport()">Submit Report</button>
+    <button class="modal-cancel" onclick="closeModal('modal-report')">Cancel</button>
+  </div>
+</div>
+
+<!-- MODAL: CLOCK OUT CONFIRM -->
+<div class="modal-overlay" id="modal-clockout">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Clock <span>Out?</span></div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;">
+      Are you sure you want to end your shift? Your data will be recorded to Google Sheets.
+    </p>
+    <div class="break-summary" id="co-preview"></div>
+    <button class="modal-btn" onclick="clockOut()" style="background:linear-gradient(135deg,var(--danger),#a02020);color:white;">
+      Yes, Clock Out
+    </button>
+    <button class="modal-cancel" onclick="closeModal('modal-clockout')">Keep Working</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--navy-light);border:1px solid var(--border);border-radius:12px;padding:12px 20px;font-size:14px;color:var(--white);z-index:200;transition:all 0.3s;pointer-events:none;white-space:nowrap;max-width:90%;text-align:center;"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  GOOGLE APPS SCRIPT URL — paste yours here
+// ══════════════════════════════════════════
+const SHEETS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+// ══════════════════════════════════════════
+//  MAX SHIFT DURATION: 12 hours in ms
+// ══════════════════════════════════════════
+const MAX_SHIFT_MS = 12 * 60 * 60 * 1000;
+
+// ══════════════════════════════════════════
+//  PERSISTENT STATE via localStorage
+// ══════════════════════════════════════════
+const STORAGE_KEY = 'pi_cleaning_state';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    // Convert ISO strings back to Date objects
+    if (s.clockInTime) s.clockInTime = new Date(s.clockInTime);
+    if (s.currentBreakStart) s.currentBreakStart = new Date(s.currentBreakStart);
+    s.jobs = (s.jobs || []).map(j => ({ ...j, time: new Date(j.time) }));
+    return s;
+  } catch(e) { return null; }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch(e) {}
+}
+
+function clearState() {
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ══════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════
+let state = {
+  employee: { name:'', id:'', shift:'' },
+  clockInTime: null,
+  gps: { lat: null, lng: null },
+  jobs: [],
+  breaks: [],           // [{start: ISO, end: ISO, duration: secs}]
+  currentBreakStart: null,
+  onBreak: false,
+  totalBreakSecs: 0,
+  reports: [],
+  selectedReportType: '',
+  jobGps: { lat: null, lng: null },
+  photoFiles: [],
+  screen: 'clockin'
+};
+
+let swInterval = null;
+let autoClockOutTimer = null;
+
+// ══════════════════════════════════════════
+//  INIT — restore from localStorage
+// ══════════════════════════════════════════
+function init() {
+  const saved = loadState();
+
+  // Show splash briefly then route
+  setTimeout(() => {
+    if (saved && saved.clockInTime && saved.screen === 'working') {
+      // Check if 12h auto-timeout has already passed
+      const now = Date.now();
+      const elapsed = now - new Date(saved.clockInTime).getTime();
+      if (elapsed >= MAX_SHIFT_MS) {
+        // Auto-clock-out happened while away
+        state = saved;
+        state.clockInTime = new Date(state.clockInTime);
+        if (state.currentBreakStart) state.currentBreakStart = new Date(state.currentBreakStart);
+        performAutoClockOut();
+      } else {
+        // Restore working session
+        state = saved;
+        state.clockInTime = new Date(state.clockInTime);
+        if (state.currentBreakStart) state.currentBreakStart = new Date(state.currentBreakStart);
+        state.jobs = (state.jobs || []).map(j => ({ ...j, time: new Date(j.time) }));
+        restoreWorkingScreen();
+      }
+    } else if (saved && saved.screen === 'clockedout') {
+      switchScreen('clockedout');
+    } else {
+      switchScreen('clockin');
+    }
+    updateCITime();
+  }, 3200);
+}
+
+function restoreWorkingScreen() {
+  document.getElementById('work-employee-name').textContent = state.employee.name;
+  document.getElementById('wi-name').textContent = state.employee.name;
+  document.getElementById('wi-id').textContent = state.employee.id;
+  document.getElementById('wi-clockin').textContent = fmt12(state.clockInTime);
+  document.getElementById('wi-shift').textContent = state.employee.shift;
+  document.getElementById('wi-gps').textContent = `${state.gps.lat}, ${state.gps.lng}`;
+  renderJobs();
+  switchScreen('working');
+  startStopwatch();
+  updateBreakUI();
+  scheduleAutoClockOut();
+  showToast('👋 Welcome back! Your session was restored.');
+}
+
+// ══════════════════════════════════════════
+//  SCREEN SWITCHING
+// ══════════════════════════════════════════
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  state.screen = id;
+  saveState();
+}
+
+// ══════════════════════════════════════════
+//  LIVE CLOCK (clock-in screen)
+// ══════════════════════════════════════════
+function updateCITime() {
+  const now = new Date();
+  const el = document.getElementById('ci-time');
+  if (el) el.textContent = now.toLocaleTimeString('en-AU', { hour:'2-digit', minute:'2-digit' });
+  const h = now.getHours();
+  const gel = document.getElementById('greeting-time');
+  if (gel) gel.textContent = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+}
+setInterval(updateCITime, 1000);
+
+// Enable clock-in button
+['emp-name','emp-id','job-address'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', checkReady);
+});
+function checkReady() {
+  const n = document.getElementById('emp-name').value.trim();
+  const i = document.getElementById('emp-id').value.trim();
+  const a = document.getElementById('job-address').value.trim();
+  const g = state.gps.lat !== null;
+  document.getElementById('btn-ci').disabled = !(n && i && a && g);
+}
+
+// ══════════════════════════════════════════
+//  GPS
+// ══════════════════════════════════════════
+function getLocation() {
+  const st = document.getElementById('loc-status');
+  st.className = 'loc-status';
+  st.textContent = '⏳ Fetching your location...';
+  if (!navigator.geolocation) {
+    st.className = 'loc-status error';
+    st.textContent = '✗ Geolocation not supported';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    state.gps.lat = pos.coords.latitude.toFixed(6);
+    state.gps.lng = pos.coords.longitude.toFixed(6);
+    st.className = 'loc-status';
+    st.textContent = `✓ GPS: ${state.gps.lat}, ${state.gps.lng}`;
+    checkReady();
+  }, () => {
+    st.className = 'loc-status error';
+    st.textContent = '✗ Could not get location. Allow GPS access.';
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+function getJobLocation() {
+  const st = document.getElementById('job-loc-status');
+  st.className = 'loc-status';
+  st.textContent = '⏳ Fetching location...';
+  navigator.geolocation.getCurrentPosition(pos => {
+    state.jobGps.lat = pos.coords.latitude.toFixed(6);
+    state.jobGps.lng = pos.coords.longitude.toFixed(6);
+    st.className = 'loc-status';
+    st.textContent = `✓ GPS: ${state.jobGps.lat}, ${state.jobGps.lng}`;
+  }, () => {
+    st.className = 'loc-status error';
+    st.textContent = '✗ Unable to capture location';
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+// ══════════════════════════════════════════
+//  CLOCK IN
+// ══════════════════════════════════════════
+function clockIn() {
+  state.employee.name = document.getElementById('emp-name').value.trim();
+  state.employee.id = document.getElementById('emp-id').value.trim();
+  state.employee.shift = document.getElementById('shift-type').value;
+  state.clockInTime = new Date();
+  state.breaks = [];
+  state.totalBreakSecs = 0;
+  state.onBreak = false;
+  state.currentBreakStart = null;
+  state.reports = [];
+  state.jobs = [];
+
+  const addr = document.getElementById('job-address').value.trim();
+  state.jobs = [{
+    address: addr,
+    gps: { lat: state.gps.lat, lng: state.gps.lng },
+    time: state.clockInTime,
+    active: true
+  }];
+
+  document.getElementById('work-employee-name').textContent = state.employee.name;
+  document.getElementById('wi-name').textContent = state.employee.name;
+  document.getElementById('wi-id').textContent = state.employee.id;
+  document.getElementById('wi-clockin').textContent = fmt12(state.clockInTime);
+  document.getElementById('wi-shift').textContent = state.employee.shift;
+  document.getElementById('wi-gps').textContent = `${state.gps.lat}, ${state.gps.lng}`;
+  document.getElementById('wi-break').textContent = '0:00';
+
+  renderJobs();
+  switchScreen('working');
+  startStopwatch();
+  scheduleAutoClockOut();
+  saveState();
+
+  sendToSheets('CLOCK_IN', {
+    type: 'CLOCK_IN',
+    name: state.employee.name,
+    id: state.employee.id,
+    shift: state.employee.shift,
+    clockIn: iso(state.clockInTime),
+    address: addr,
+    lat: state.gps.lat,
+    lng: state.gps.lng,
+    date: dateStr(state.clockInTime)
+  });
+}
+
+// ══════════════════════════════════════════
+//  AUTO CLOCK-OUT (12h)
+// ══════════════════════════════════════════
+function scheduleAutoClockOut() {
+  if (autoClockOutTimer) clearTimeout(autoClockOutTimer);
+  const elapsed = Date.now() - new Date(state.clockInTime).getTime();
+  const remaining = MAX_SHIFT_MS - elapsed;
+  if (remaining <= 0) { performAutoClockOut(); return; }
+
+  // Show warning at 30 min before
+  const warnAt = remaining - 30 * 60 * 1000;
+  if (warnAt > 0) {
+    setTimeout(showTimeoutWarning, warnAt);
+  } else {
+    showTimeoutWarning();
+  }
+  autoClockOutTimer = setTimeout(performAutoClockOut, remaining);
+}
+
+function showTimeoutWarning() {
+  const banner = document.getElementById('timeout-banner');
+  if (!banner) return;
+  banner.classList.add('visible');
+  updateCountdown();
+  setInterval(updateCountdown, 30000);
+}
+
+function updateCountdown() {
+  const remaining = MAX_SHIFT_MS - (Date.now() - new Date(state.clockInTime).getTime());
+  const mins = Math.max(0, Math.round(remaining / 60000));
+  const el = document.getElementById('timeout-countdown');
+  if (el) el.textContent = mins > 0 ? `${mins} min` : 'now';
+}
+
+function performAutoClockOut() {
+  // End any active break first
+  if (state.onBreak && state.currentBreakStart) {
+    const breakSecs = Math.floor((Date.now() - new Date(state.currentBreakStart).getTime()) / 1000);
+    state.totalBreakSecs += breakSecs;
+    state.breaks.push({ start: iso(new Date(state.currentBreakStart)), end: iso(new Date()), duration: breakSecs });
+    state.onBreak = false;
+    state.currentBreakStart = null;
+  }
+  if (swInterval) clearInterval(swInterval);
+
+  const clockOutTime = new Date();
+  const elapsed = Math.floor((clockOutTime - new Date(state.clockInTime)) / 1000) - state.totalBreakSecs;
+
+  sendToSheets('CLOCK_OUT', {
+    type: 'CLOCK_OUT',
+    name: state.employee.name,
+    id: state.employee.id,
+    clockIn: iso(state.clockInTime),
+    clockOut: iso(clockOutTime),
+    totalWorked: secToHMS(Math.max(0, elapsed)),
+    totalBreak: secToMS(state.totalBreakSecs),
+    breaks: state.breaks.length,
+    jobs: state.jobs.length,
+    date: dateStr(clockOutTime),
+    autoClockOut: true
+  });
+
+  document.getElementById('co-name').textContent = state.employee.name;
+  document.getElementById('co-hours').textContent = secToHMS(Math.max(0, elapsed));
+  document.getElementById('co-break').textContent = secToMS(state.totalBreakSecs);
+  document.getElementById('co-jobs').textContent = state.jobs.length;
+  document.getElementById('co-time').textContent = fmt12(clockOutTime) + ' (Auto)';
+
+  state.screen = 'clockedout';
+  clearState();
+  switchScreen('clockedout');
+  showToast('⏰ Shift auto-ended after 12 hours');
+}
+
+// ══════════════════════════════════════════
+//  STOPWATCH
+// ══════════════════════════════════════════
+function startStopwatch() {
+  updateDateDisplay();
+  if (swInterval) clearInterval(swInterval);
+  swInterval = setInterval(tick, 1000);
+  tick();
+}
+
+function tick() {
+  const now = Date.now();
+
+  // Work timer (pauses on break)
+  if (!state.onBreak) {
+    const elapsed = Math.floor((now - new Date(state.clockInTime).getTime()) / 1000) - state.totalBreakSecs;
+    document.getElementById('sw-time').textContent = secToHMS(Math.max(0, elapsed));
+  }
+
+  // Break timer (active only on break)
+  if (state.onBreak && state.currentBreakStart) {
+    const bs = Math.floor((now - new Date(state.currentBreakStart).getTime()) / 1000);
+    document.getElementById('bt-time').textContent = secToMS(bs);
+  }
+
+  // Update total break display
+  let displayBreak = state.totalBreakSecs;
+  if (state.onBreak && state.currentBreakStart) {
+    displayBreak += Math.floor((now - new Date(state.currentBreakStart).getTime()) / 1000);
+  }
+  document.getElementById('wi-break').textContent = secToMS(displayBreak);
+}
+
+function updateDateDisplay() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('sw-day').textContent = days[now.getDay()];
+  document.getElementById('sw-date').textContent = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+// ══════════════════════════════════════════
+//  BREAK
+// ══════════════════════════════════════════
+function toggleBreak() {
+  if (!state.onBreak) {
+    // START BREAK
+    state.onBreak = true;
+    state.currentBreakStart = new Date().toISOString();
+    saveState();
+    updateBreakUI();
+
+    sendToSheets('BREAK_START', {
+      type: 'BREAK_START',
+      name: state.employee.name,
+      id: state.employee.id,
+      breakNumber: state.breaks.length + 1,
+      time: state.currentBreakStart,
+      date: dateStr(new Date())
+    });
+    showToast('☕ Break started — enjoy!');
+  } else {
+    // END BREAK
+    const breakEnd = new Date();
+    const breakSecs = Math.floor((breakEnd.getTime() - new Date(state.currentBreakStart).getTime()) / 1000);
+    state.totalBreakSecs += breakSecs;
+    const bRecord = {
+      start: state.currentBreakStart,
+      end: breakEnd.toISOString(),
+      duration: breakSecs
+    };
+    state.breaks.push(bRecord);
+    state.onBreak = false;
+    state.currentBreakStart = null;
+    saveState();
+    updateBreakUI();
+    renderBreakHistory();
+
+    sendToSheets('BREAK_END', {
+      type: 'BREAK_END',
+      name: state.employee.name,
+      id: state.employee.id,
+      breakNumber: state.breaks.length,
+      breakStart: bRecord.start,
+      breakEnd: bRecord.end,
+      duration: secToMS(breakSecs),
+      durationSecs: breakSecs,
+      time: bRecord.end,
+      date: dateStr(breakEnd)
+    });
+    showToast(`▶ Resumed — break was ${secToMS(breakSecs)}`);
+  }
+}
+
+function updateBreakUI() {
+  const pill = document.getElementById('status-pill');
+  const breakCard = document.getElementById('break-timer-card');
+  const btn = document.getElementById('break-btn');
+
+  if (state.onBreak) {
+    pill.className = 'status-pill break';
+    pill.innerHTML = '<span class="dot"></span> On Break';
+    breakCard.classList.add('visible');
+    btn.classList.add('on-break');
+    btn.innerHTML = '<span>▶</span> Resume';
+  } else {
+    pill.className = 'status-pill';
+    pill.innerHTML = '<span class="dot"></span> Working';
+    breakCard.classList.remove('visible');
+    btn.classList.remove('on-break');
+    btn.innerHTML = '<span>☕</span> Break';
+  }
+}
+
+function renderBreakHistory() {
+  if (!state.breaks.length) return;
+  const histEl = document.getElementById('bt-history');
+  const listEl = document.getElementById('bt-history-list');
+  if (histEl) histEl.style.display = 'block';
+  if (listEl) {
+    listEl.innerHTML = state.breaks.map((b, i) =>
+      `<div class="bt-history-item"><span>Break ${i+1} at ${fmt12(new Date(b.start))}</span><span>${secToMS(b.duration)}</span></div>`
+    ).join('');
+  }
+}
+
+// ══════════════════════════════════════════
+//  ADD JOB
+// ══════════════════════════════════════════
+function openAddJob() {
+  state.jobGps = { lat: null, lng: null };
+  document.getElementById('new-job-addr').value = '';
+  document.getElementById('job-loc-status').textContent = '';
+  openModal('modal-job');
+}
+
+function addJob() {
+  const addr = document.getElementById('new-job-addr').value.trim();
+  if (!addr) { showToast('Please enter a job address'); return; }
+  if (!state.jobGps.lat) { showToast('Please capture GPS for this job'); return; }
+  state.jobs.forEach(j => j.active = false);
+  const now = new Date();
+  state.jobs.push({ address: addr, gps: { ...state.jobGps }, time: now, active: true });
+  renderJobs();
+  closeModal('modal-job');
+  saveState();
+
+  sendToSheets('NEW_JOB', {
+    type: 'NEW_JOB',
+    name: state.employee.name,
+    id: state.employee.id,
+    address: addr,
+    lat: state.jobGps.lat,
+    lng: state.jobGps.lng,
+    time: iso(now),
+    date: dateStr(now)
+  });
+  showToast('✓ New job location added!');
+}
+
+function renderJobs() {
+  const c = document.getElementById('jobs-list');
+  c.innerHTML = '';
+  state.jobs.forEach((j, i) => {
+    c.innerHTML += `
+    <div class="job-item">
+      <div class="job-num">${i+1}</div>
+      <div class="job-info">
+        <div class="job-addr">${j.address}</div>
+        <div class="job-time">Started ${fmt12(new Date(j.time))} · GPS: ${j.gps.lat}, ${j.gps.lng}</div>
+        ${j.active ? '<div class="job-active">● Current Job</div>' : ''}
+      </div>
+    </div>`;
+  });
+}
+
+// ══════════════════════════════════════════
+//  REPORT
+// ══════════════════════════════════════════
+function openReport() {
+  state.selectedReportType = '';
+  state.photoFiles = [];
+  document.getElementById('report-desc').value = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-placeholder').style.display = 'block';
+  document.getElementById('photo-count').textContent = '';
+  document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('selected'));
+  openModal('modal-report');
+}
+
+function selectReport(el, type) {
+  document.querySelectorAll('.report-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedReportType = type;
+}
+
+function handlePhoto(input) {
+  state.photoFiles = Array.from(input.files);
+  if (!state.photoFiles.length) return;
+  document.getElementById('photo-placeholder').style.display = 'none';
+  const preview = document.getElementById('photo-preview');
+  preview.style.display = 'block';
+  preview.innerHTML = '';
+  state.photoFiles.slice(0,3).forEach(f => {
+    const img = document.createElement('img');
+    img.style.cssText = 'width:100%;border-radius:10px;margin-bottom:8px;';
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(f);
+    preview.appendChild(img);
+  });
+  document.getElementById('photo-count').textContent = `${state.photoFiles.length} photo(s) attached`;
+}
+
+function submitReport() {
+  if (!state.selectedReportType) { showToast('Please select a report type'); return; }
+  const desc = document.getElementById('report-desc').value.trim();
+  if (!desc) { showToast('Please add a description'); return; }
+  const now = new Date();
+  const report = {
+    type: 'REPORT',
+    reportType: state.selectedReportType,
+    name: state.employee.name,
+    id: state.employee.id,
+    description: desc,
+    priority: document.getElementById('report-priority').value,
+    photos: state.photoFiles.length,
+    time: iso(now),
+    date: dateStr(now),
+    currentAddress: state.jobs[state.jobs.length-1]?.address || ''
+  };
+  state.reports.push(report);
+  saveState();
+  sendToSheets('REPORT', report);
+  closeModal('modal-report');
+  showToast(`✓ ${state.selectedReportType} report submitted`);
+}
+
+// ══════════════════════════════════════════
+//  CLOCK OUT
+// ══════════════════════════════════════════
+function confirmClockOut() {
+  // End active break for preview
+  let previewBreakSecs = state.totalBreakSecs;
+  if (state.onBreak && state.currentBreakStart) {
+    previewBreakSecs += Math.floor((Date.now() - new Date(state.currentBreakStart).getTime()) / 1000);
+  }
+  const elapsed = Math.floor((Date.now() - new Date(state.clockInTime).getTime()) / 1000) - previewBreakSecs;
+  document.getElementById('co-preview').innerHTML = `
+    <div class="break-row"><span class="break-key">Total worked</span><span class="break-val">${secToHMS(Math.max(0,elapsed))}</span></div>
+    <div class="break-row"><span class="break-key">Breaks taken</span><span class="break-val">${state.breaks.length + (state.onBreak ? 1 : 0)} (${secToMS(previewBreakSecs)})</span></div>
+    <div class="break-row"><span class="break-key">Jobs completed</span><span class="break-val">${state.jobs.length}</span></div>
+  `;
+  openModal('modal-clockout');
+}
+
+function clockOut() {
+  // End any active break
+  if (state.onBreak && state.currentBreakStart) {
+    const breakEnd = new Date();
+    const breakSecs = Math.floor((breakEnd.getTime() - new Date(state.currentBreakStart).getTime()) / 1000);
+    state.totalBreakSecs += breakSecs;
+    state.breaks.push({ start: state.currentBreakStart, end: breakEnd.toISOString(), duration: breakSecs });
+    sendToSheets('BREAK_END', {
+      type: 'BREAK_END',
+      name: state.employee.name,
+      id: state.employee.id,
+      breakNumber: state.breaks.length,
+      breakStart: state.currentBreakStart,
+      breakEnd: breakEnd.toISOString(),
+      duration: secToMS(breakSecs),
+      durationSecs: breakSecs,
+      time: iso(breakEnd),
+      date: dateStr(breakEnd)
+    });
+    state.onBreak = false;
+    state.currentBreakStart = null;
+  }
+
+  if (swInterval) clearInterval(swInterval);
+  if (autoClockOutTimer) clearTimeout(autoClockOutTimer);
+
+  const clockOutTime = new Date();
+  const elapsed = Math.floor((clockOutTime.getTime() - new Date(state.clockInTime).getTime()) / 1000) - state.totalBreakSecs;
+
+  document.getElementById('co-name').textContent = state.employee.name;
+  document.getElementById('co-hours').textContent = secToHMS(Math.max(0, elapsed));
+  document.getElementById('co-break').textContent = secToMS(state.totalBreakSecs);
+  document.getElementById('co-jobs').textContent = state.jobs.length;
+  document.getElementById('co-time').textContent = fmt12(clockOutTime);
+
+  sendToSheets('CLOCK_OUT', {
+    type: 'CLOCK_OUT',
+    name: state.employee.name,
+    id: state.employee.id,
+    clockIn: iso(new Date(state.clockInTime)),
+    clockOut: iso(clockOutTime),
+    totalWorked: secToHMS(Math.max(0, elapsed)),
+    totalWorkedSecs: Math.max(0, elapsed),
+    totalBreak: secToMS(state.totalBreakSecs),
+    totalBreakSecs: state.totalBreakSecs,
+    breaks: state.breaks.length,
+    breakDetails: state.breaks,
+    jobs: state.jobs.length,
+    date: dateStr(clockOutTime),
+    autoClockOut: false
+  });
+
+  closeModal('modal-clockout');
+  clearState();
+  switchScreen('clockedout');
+}
+
+// ══════════════════════════════════════════
+//  RESET
+// ══════════════════════════════════════════
+function resetApp() {
+  if (swInterval) clearInterval(swInterval);
+  if (autoClockOutTimer) clearTimeout(autoClockOutTimer);
+  state = {
+    employee: { name:'', id:'', shift:'' },
+    clockInTime: null,
+    gps: { lat: null, lng: null },
+    jobs: [], breaks: [],
+    currentBreakStart: null,
+    onBreak: false,
+    totalBreakSecs: 0,
+    reports: [],
+    selectedReportType: '',
+    jobGps: { lat: null, lng: null },
+    photoFiles: [],
+    screen: 'clockin'
+  };
+  clearState();
+  document.getElementById('emp-name').value = '';
+  document.getElementById('emp-id').value = '';
+  document.getElementById('job-address').value = '';
+  document.getElementById('loc-status').textContent = '';
+  document.getElementById('btn-ci').disabled = true;
+  document.getElementById('sw-time').textContent = '00:00:00';
+  document.getElementById('timeout-banner').classList.remove('visible');
+  switchScreen('clockin');
+  updateCITime();
+}
+
+// ══════════════════════════════════════════
+//  GOOGLE SHEETS
+// ══════════════════════════════════════════
+function sendToSheets(eventType, data) {
+  if (SHEETS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+    console.log('[Sheets]', eventType, data);
+    return;
+  }
+  fetch(SHEETS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(e => console.warn('Sheets sync failed:', e));
+}
+
+// ══════════════════════════════════════════
+//  MODAL HELPERS
+// ══════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2500);
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function secToHMS(s) {
+  s = Math.max(0, s);
+  const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return `${pad(h)}:${pad(m)}:${pad(sec)}`;
+}
+function secToMS(s) {
+  s = Math.max(0, s);
+  const m = Math.floor(s/60), sec = s%60;
+  return `${pad(m)}:${pad(sec)}`;
+}
+function pad(n) { return String(n).padStart(2,'0'); }
+function fmt12(d) {
+  if (!d) return '—';
+  const dd = d instanceof Date ? d : new Date(d);
+  return dd.toLocaleTimeString('en-AU', { hour:'2-digit', minute:'2-digit', hour12: true });
+}
+function iso(d) { return d ? (d instanceof Date ? d : new Date(d)).toISOString() : ''; }
+function dateStr(d) {
+  if (!d) return '';
+  const dd = d instanceof Date ? d : new Date(d);
+  return dd.toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+// ══════════════════════════════════════════
+//  START
+// ══════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
